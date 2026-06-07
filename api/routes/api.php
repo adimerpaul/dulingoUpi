@@ -1,5 +1,6 @@
 <?php
 $auth = [[AuthMiddleware::class, 'handle']];
+$admin = [[AuthMiddleware::class, 'handle'], [AdminMiddleware::class, 'handle']];
 
 // Autenticación (pública)
 $router->post('/auth/login',    [AuthController::class,   'login']);
@@ -14,3 +15,7 @@ $router->get('/secciones/{id}/detalles/{detalleId}/preguntas',     [PreguntaCont
 // Progreso del usuario (protegido)
 $router->get('/progreso',  [ProgresoController::class, 'get'],  $auth);
 $router->post('/progreso', [ProgresoController::class, 'post'], $auth);
+
+// Administracion (solo rol Administrador)
+$router->get('/admin/{resource}',       [AdminController::class, 'index'],  $admin);
+$router->put('/admin/{resource}/{id}',  [AdminController::class, 'update'], $admin);

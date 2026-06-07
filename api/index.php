@@ -20,6 +20,7 @@ require_once __DIR__ . '/core/Router.php';
 require_once __DIR__ . '/core/Controller.php';
 require_once __DIR__ . '/core/Model.php';
 require_once __DIR__ . '/middleware/AuthMiddleware.php';
+require_once __DIR__ . '/middleware/AdminMiddleware.php';
 require_once __DIR__ . '/models/Usuario.php';
 require_once __DIR__ . '/models/Seccion.php';
 require_once __DIR__ . '/models/SeccionDetalle.php';
@@ -30,6 +31,7 @@ require_once __DIR__ . '/controllers/AuthController.php';
 require_once __DIR__ . '/controllers/SeccionController.php';
 require_once __DIR__ . '/controllers/PreguntaController.php';
 require_once __DIR__ . '/controllers/ProgresoController.php';
+require_once __DIR__ . '/controllers/AdminController.php';
 
 // --- Resolver ruta relativa al directorio del script ---
 $uri  = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);

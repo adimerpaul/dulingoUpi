@@ -418,6 +418,112 @@ a:hover { text-decoration: underline; }
 }
 .pill-btn:active { transform: translateY(2px); border-bottom-width: 2px; }
 
+/* =============== ADMIN =============== */
+.admin-panel {
+  padding: 4px 0 90px;
+}
+.admin-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+.admin-kicker {
+  color: var(--primary);
+  font-size: 13px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+.admin-head h2 {
+  font-size: 30px;
+}
+.admin-panel p {
+  color: var(--muted);
+}
+.admin-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+.admin-tab {
+  padding: 10px 13px;
+  border-radius: 12px;
+  border: 2px solid var(--border);
+  background: var(--panel);
+  color: var(--muted);
+  font-family: 'Fredoka', sans-serif;
+  font-weight: 600;
+}
+.admin-tab.active {
+  background: var(--primary-soft);
+  border-color: var(--primary);
+  color: #ffb892;
+}
+.admin-error {
+  margin-bottom: 14px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: var(--red-soft);
+  color: #ffc2c2;
+}
+.admin-table-wrap {
+  overflow-x: auto;
+  border: 2px solid var(--border);
+  border-radius: 18px;
+  background: var(--panel);
+}
+.admin-table {
+  width: 100%;
+  min-width: 760px;
+  border-collapse: collapse;
+}
+.admin-table th,
+.admin-table td {
+  padding: 12px;
+  border-bottom: 1px solid var(--border);
+  text-align: left;
+  vertical-align: top;
+}
+.admin-table th {
+  color: var(--muted);
+  font-family: 'Fredoka', sans-serif;
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: .6px;
+}
+.admin-id {
+  color: var(--muted);
+  width: 56px;
+}
+.admin-input {
+  width: 100%;
+  min-width: 150px;
+  padding: 10px 11px;
+  border-radius: 10px;
+  border: 2px solid var(--border);
+  background: var(--panel-2);
+  color: var(--text);
+  font-family: 'Nunito', sans-serif;
+  font-weight: 700;
+}
+.admin-textarea {
+  min-height: 76px;
+  resize: vertical;
+}
+.admin-check {
+  width: 22px;
+  height: 22px;
+  accent-color: var(--primary);
+}
+.admin-save {
+  min-width: 0;
+  padding: 10px 14px;
+  font-size: 13px;
+}
+
 /* =============== MOBILE =============== */
 .mobile-top, .mobile-nav { display: none; }
 .mobile-top {

@@ -15,6 +15,21 @@ const PATH_OFFSET = [0, -52, -80, -52, 0, 56, 88, 56, 0, -52];
 let APP = { secciones: [], currentSeccion: null };
 let lesson = null;
 const view = { screen: 'map', nav: 'aprender', activeDetalle: null, earnedXp: 0 };
+const IS_ADMIN = USER.rol === 'Administrador' || Number(USER.id) === 1;
+const ADMIN_RESOURCES = [
+  { id: 'seccion', label: 'Seccion' },
+  { id: 'seccion_detalle', label: 'Seccion detalle' },
+  { id: 'preguntas', label: 'Preguntas' },
+  { id: 'respuesta', label: 'Respuesta' },
+  { id: 'usuario_seccion_detalle', label: 'Progreso usuario' },
+];
+let adminState = {
+  resource: 'seccion',
+  fields: [],
+  rows: [],
+  loading: false,
+  error: '',
+};
 
 function loadStore() {
   try { return Object.assign({ hearts: 5, gems: 183, dailyPct: 40, xp: 0 }, JSON.parse(localStorage.getItem(STORE_KEY) || '{}')); }
@@ -91,6 +106,9 @@ const NAV_ITEMS = [
   { id: 'ligas',    label: 'Ligas',    icon: 'league' },
   { id: 'perfil',   label: 'Perfil',   icon: 'profile' },
 ];
+function navItems() {
+  return IS_ADMIN ? [...NAV_ITEMS, { id: 'admin', label: 'Admin', icon: 'crown' }] : NAV_ITEMS;
+}
 const TIPO_ICON = { lesson: 'star', review: 'book', chest: 'chest', crown: 'crown' };
 
 function getNodeStatus(index, detalles) {
@@ -123,14 +141,77 @@ function nodeHTML(detalle, index, detalles) {
   </div>`;
 }
 
+function adminCell(field, value) {
+  const raw = value ?? '';
+  if (field === 'config') {
+    return `<textarea class="admin-input admin-textarea" data-field="${field}">${String(raw).replace(/</g, '&lt;')}</textarea>`;
+  }
+  if (field === 'es_correcta' || field === 'realizado') {
+    return `<input class="admin-check" type="checkbox" data-field="${field}" ${Number(raw) ? 'checked' : ''}>`;
+  }
+  return `<input class="admin-input" data-field="${field}" value="${String(raw).replace(/"/g, '&quot;')}">`;
+}
+
+function adminHTML() {
+  if (!IS_ADMIN) {
+    return `<div class="admin-panel"><h2 class="fred">Sin permisos</h2><p>No tienes acceso a administracion.</p></div>`;
+  }
+
+  const tabs = ADMIN_RESOURCES.map(r =>
+    `<button class="admin-tab ${adminState.resource === r.id ? 'active' : ''}" data-act="admin-resource" data-resource="${r.id}">${r.label}</button>`
+  ).join('');
+
+  if (adminState.loading) {
+    return `<div class="admin-panel"><div class="admin-head"><h2 class="fred">Administracion</h2></div><div class="admin-tabs">${tabs}</div><div class="spinner" style="margin:40px auto"></div></div>`;
+  }
+
+  const header = adminState.fields.map(f => `<th>${f}</th>`).join('');
+  const rows = adminState.rows.map(row => `
+    <tr data-id="${row.id}">
+      <td class="admin-id">${row.id}</td>
+      ${adminState.fields.map(f => `<td>${adminCell(f, row[f])}</td>`).join('')}
+      <td><button class="btn btn-primary admin-save" data-act="admin-save">Guardar</button></td>
+    </tr>
+  `).join('');
+
+  return `<div class="admin-panel">
+    <div class="admin-head">
+      <div>
+        <p class="admin-kicker fred">Rol: Administrador</p>
+        <h2 class="fred">Modificar tablas</h2>
+      </div>
+    </div>
+    <div class="admin-tabs">${tabs}</div>
+    ${adminState.error ? `<div class="admin-error">${adminState.error}</div>` : ''}
+    <div class="admin-table-wrap">
+      <table class="admin-table">
+        <thead><tr><th>ID</th>${header}<th>Accion</th></tr></thead>
+        <tbody>${rows || '<tr><td colspan="99">Sin registros</td></tr>'}</tbody>
+      </table>
+    </div>
+  </div>`;
+}
+
 function mapHTML() {
   const sec      = APP.currentSeccion;
   const detalles = sec?.detalles || [];
   const completed = detalles.filter(d => d.realizado).length;
 
   const nodes    = detalles.map((d, i) => nodeHTML(d, i, detalles)).join('');
-  const navSide  = NAV_ITEMS.map(n => `<button class="nav-item ${view.nav === n.id ? 'active' : ''}" data-act="nav" data-id="${n.id}">${ICON[n.icon]()}<span>${n.label}</span></button>`).join('');
-  const navMob   = NAV_ITEMS.map(n => `<button class="mnav-btn ${view.nav === n.id ? 'active' : ''}" data-act="nav" data-id="${n.id}">${ICON[n.icon]()}</button>`).join('');
+  const navSide  = navItems().map(n => `<button class="nav-item ${view.nav === n.id ? 'active' : ''}" data-act="nav" data-id="${n.id}">${ICON[n.icon]()}<span>${n.label}</span></button>`).join('');
+  const navMob   = navItems().map(n => `<button class="mnav-btn ${view.nav === n.id ? 'active' : ''}" data-act="nav" data-id="${n.id}">${ICON[n.icon]()}</button>`).join('');
+  const mainContent = view.nav === 'admin' ? adminHTML() : `
+        <div class="unit-banner">
+          <div>
+            <div class="eyebrow">${ICON.arrowL()}${sec?.nombre || ''}</div>
+            <h2>${sec?.nombre || 'Cargandoâ€¦'}</h2>
+          </div>
+        </div>
+        <div class="path">
+          ${nodes}
+          <div class="path-divider"><span>PrÃ³xima secciÃ³n</span></div>
+          <button class="node locked" style="margin-bottom:18px" disabled><span class="face">${ICON.star()}</span></button>
+        </div>`;
 
   return `<div class="app">
     <header class="mobile-top">
@@ -458,6 +539,50 @@ function noHeartsHTML() {
 }
 function showNoHearts() { if (!document.getElementById('nh-modal')) document.getElementById('root').insertAdjacentHTML('beforeend', noHeartsHTML()); }
 
+// ---- Administracion ----
+async function loadAdmin(resource = adminState.resource) {
+  if (!IS_ADMIN) return;
+  adminState = { ...adminState, resource, loading: true, error: '' };
+  view.nav = 'admin';
+  view.screen = 'map';
+  render();
+  try {
+    const res = await api.admin.list(resource);
+    adminState = {
+      resource,
+      fields: res.data.fields,
+      rows: res.data.rows,
+      loading: false,
+      error: '',
+    };
+  } catch (err) {
+    adminState = { ...adminState, loading: false, error: err.message || 'No se pudo cargar administracion' };
+  }
+  render();
+}
+
+async function saveAdminRow(btn) {
+  const tr = btn.closest('tr[data-id]');
+  if (!tr) return;
+  const id = tr.getAttribute('data-id');
+  const data = {};
+
+  tr.querySelectorAll('[data-field]').forEach(input => {
+    const field = input.getAttribute('data-field');
+    data[field] = input.type === 'checkbox' ? input.checked : input.value;
+  });
+
+  btn.textContent = 'Guardando...';
+  btn.disabled = true;
+  try {
+    await api.admin.update(adminState.resource, id, data);
+    await loadAdmin(adminState.resource);
+  } catch (err) {
+    adminState.error = err.message || 'No se pudo guardar el registro';
+    render();
+  }
+}
+
 // ---- Audio ----
 function speak(text) {
   try {
@@ -472,7 +597,13 @@ function speak(text) {
 function render() {
   const root = document.getElementById('root');
   if (!root) return;
-  if      (view.screen === 'map')      root.innerHTML = mapHTML();
+  if      (view.screen === 'map') {
+    root.innerHTML = mapHTML();
+    if (view.nav === 'admin') {
+      const main = root.querySelector('.main-inner');
+      if (main) main.innerHTML = adminHTML();
+    }
+  }
   else if (view.screen === 'lesson')   root.innerHTML = lessonShellHTML();
   else if (view.screen === 'complete') root.innerHTML = completeHTML();
 }
@@ -483,7 +614,11 @@ document.getElementById('root').addEventListener('click', e => {
   if (!t) return;
   const act = t.getAttribute('data-act');
   switch (act) {
-    case 'nav':              view.nav = t.getAttribute('data-id'); render(); break;
+    case 'nav':
+      view.nav = t.getAttribute('data-id');
+      if (view.nav === 'admin') loadAdmin();
+      else render();
+      break;
     case 'start-node':       startNode(+t.getAttribute('data-id'), +t.getAttribute('data-i')); break;
     case 'choice':           selectChoice(+t.getAttribute('data-i')); break;
     case 'word':             addWord(+t.getAttribute('data-i')); break;
@@ -494,6 +629,8 @@ document.getElementById('root').addEventListener('click', e => {
     case 'skip':             skip(); break;
     case 'quit':             quitLesson(); break;
     case 'speak':            speak(t.getAttribute('data-text')); break;
+    case 'admin-resource':   loadAdmin(t.getAttribute('data-resource')); break;
+    case 'admin-save':       saveAdminRow(t); break;
     case 'complete-continue':
       view.screen = 'map'; render(); break;
     case 'refill':

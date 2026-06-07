@@ -46,9 +46,10 @@ class AuthController extends Controller {
             'nombre'   => $nombre,
             'email'    => $email,
             'password' => password_hash($password, PASSWORD_BCRYPT),
+            'rol'      => 'Estudiante',
         ]);
 
-        $usuario = ['id' => $id, 'nombre' => $nombre, 'email' => $email, 'password' => ''];
+        $usuario = ['id' => $id, 'nombre' => $nombre, 'email' => $email, 'rol' => 'Estudiante', 'password' => ''];
         $this->json([
             'token' => $this->makeToken($usuario),
             'user'  => $this->safeUser($usuario),
@@ -60,12 +61,18 @@ class AuthController extends Controller {
             'sub'    => $u['id'],
             'email'  => $u['email'],
             'nombre' => $u['nombre'],
+            'rol'    => $u['rol'] ?? 'Estudiante',
             'iat'    => time(),
             'exp'    => time() + JWT_EXPIRY,
         ], JWT_SECRET);
     }
 
     private function safeUser(array $u): array {
-        return ['id' => $u['id'], 'nombre' => $u['nombre'], 'email' => $u['email']];
+        return [
+            'id'     => $u['id'],
+            'nombre' => $u['nombre'],
+            'email'  => $u['email'],
+            'rol'    => $u['rol'] ?? 'Estudiante',
+        ];
     }
 }

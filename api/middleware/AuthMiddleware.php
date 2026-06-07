@@ -20,5 +20,6 @@ class AuthMiddleware {
         $_SERVER['AUTH_USER_ID']    = $payload['sub'];
         $_SERVER['AUTH_USER_EMAIL'] = $payload['email'];
         $_SERVER['AUTH_USER_NAME']  = $payload['nombre'];
+        $_SERVER['AUTH_USER_ROL']   = $payload['rol'] ?? 'Estudiante';
     }
 }

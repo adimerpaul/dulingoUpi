@@ -13,6 +13,7 @@ CREATE TABLE IF NOT EXISTS usuario (
   nombre      VARCHAR(100)  NOT NULL,
   email       VARCHAR(100)  NOT NULL UNIQUE,
   password    VARCHAR(255)  NOT NULL,
+  rol         VARCHAR(30)   NOT NULL DEFAULT 'Estudiante',
   created_at  TIMESTAMP     DEFAULT CURRENT_TIMESTAMP,
   updated_at  TIMESTAMP     DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   deleted_at  TIMESTAMP     NULL
@@ -80,6 +81,8 @@ CREATE TABLE IF NOT EXISTS usuario_seccion_detalle (
 SET FOREIGN_KEY_CHECKS = 1;
 
 -- -------------------  SEED DATA  -------------------
+
+UPDATE usuario SET rol = 'Administrador' WHERE id = 1;
 
 INSERT INTO seccion (id, nombre) VALUES
 (1, 'Etapa 1 · Saluda y despídete');

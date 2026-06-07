@@ -38,4 +38,8 @@ const api = {
     get:    ()              => apiCall('/progreso'),
     marcar: (detalleId)     => apiCall('/progreso', 'POST', { seccion_detalle_id: detalleId }),
   },
+  admin: {
+    list:   (resource)      => apiCall(`/admin/${resource}`),
+    update: (resource, id, data) => apiCall(`/admin/${resource}/${id}`, 'PUT', data),
+  },
 };
