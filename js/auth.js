@@ -2,7 +2,7 @@
 
 // Si ya hay sesión, ir directo al app
 if (localStorage.getItem('lumo_token')) {
-  window.location.href = './index.html';
+  window.location.href = './app.html';
 }
 
 function showError(msg) {
@@ -31,7 +31,7 @@ if (loginForm) {
       const res = await api.auth.login(loginForm.email.value, loginForm.password.value);
       localStorage.setItem('lumo_token', res.data.token);
       localStorage.setItem('lumo_user',  JSON.stringify(res.data.user));
-      window.location.href = './index.html';
+      window.location.href = './app.html';
     } catch (err) {
       showError(err.message || 'Error al iniciar sesión');
       setLoading(loginForm, false);
@@ -62,7 +62,7 @@ if (registerForm) {
       );
       localStorage.setItem('lumo_token', res.data.token);
       localStorage.setItem('lumo_user',  JSON.stringify(res.data.user));
-      window.location.href = './index.html';
+      window.location.href = './app.html';
     } catch (err) {
       showError(err.message || 'Error al registrarse');
       setLoading(registerForm, false);
