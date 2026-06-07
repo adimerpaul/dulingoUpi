@@ -1,0 +1,862 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<title>Lumo — Aprende inglés</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet" />
+<style>
+:root{
+  --bg:#0e1116;
+  --bg-2:#0a0d12;
+  --panel:#161d26;
+  --panel-2:#1b232e;
+  --panel-3:#212c38;
+  --border:#27313d;
+  --border-strong:#37434f;
+  --text:#eef2f5;
+  --muted:#8a97a5;
+  --muted-2:#5f6c79;
+
+  --primary:#ff7a45;
+  --primary-d:#cf5a2c;
+  --primary-soft:rgba(255,122,69,.14);
+
+  --amber:#ffc53d;
+  --amber-d:#d99c1d;
+
+  --teal:#2dd4bf;
+  --teal-d:#13a895;
+
+  --green:#5fcf2f;
+  --green-d:#4aa823;
+  --green-soft:rgba(95,207,47,.14);
+
+  --red:#ff5b5b;
+  --red-d:#d63b3b;
+  --red-soft:rgba(255,91,91,.13);
+
+  --gem:#38c6f4;
+  --heart:#ff5d6c;
+
+  --r-lg:20px;
+  --r-md:16px;
+  --r-sm:12px;
+  --shadow-card:0 1px 0 rgba(255,255,255,.02) inset, 0 8px 24px rgba(0,0,0,.35);
+  --ease:cubic-bezier(.34,1.56,.64,1);
+}
+
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%}
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:'Nunito',system-ui,sans-serif;
+  font-weight:700;
+  overflow:hidden;
+  -webkit-font-smoothing:antialiased;
+}
+#root{height:100vh;height:100dvh;}
+button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
+.fred{font-family:'Fredoka',sans-serif}
+::-webkit-scrollbar{width:10px;height:10px}
+::-webkit-scrollbar-thumb{background:var(--border-strong);border-radius:20px}
+::-webkit-scrollbar-track{background:transparent}
+
+/* ================= APP SHELL ================= */
+.app{display:grid;height:100%;
+  grid-template-columns:240px minmax(0,1fr) 380px;
+  grid-template-areas:"side main rail";
+}
+.scroller{overflow-y:auto;overflow-x:hidden;height:100%;scrollbar-gutter:stable}
+
+/* ================= SIDEBAR ================= */
+.side{grid-area:side;border-right:1px solid var(--border);padding:22px 14px;display:flex;flex-direction:column;gap:6px;background:var(--bg)}
+.brand{display:flex;align-items:center;gap:10px;padding:6px 10px 22px}
+.brand .logo{width:34px;height:34px;flex:none}
+.brand h1{font-family:'Fredoka';font-weight:700;font-size:26px;letter-spacing:-.5px;
+  background:linear-gradient(180deg,#ffb27a,var(--primary));-webkit-background-clip:text;background-clip:text;color:transparent}
+.nav-item{display:flex;align-items:center;gap:15px;padding:11px 12px;border-radius:14px;
+  border:2px solid transparent;color:var(--muted);font-family:'Fredoka';font-weight:600;
+  font-size:15px;letter-spacing:.4px;text-transform:uppercase;transition:.15s;width:100%;text-align:left}
+.nav-item svg{width:26px;height:26px;flex:none}
+.nav-item:hover{background:var(--panel)}
+.nav-item.active{background:var(--primary-soft);border-color:rgba(255,122,69,.5);color:#ffb892}
+.nav-item.active svg{color:var(--primary)}
+
+/* ================= MAIN ================= */
+.main{grid-area:main;position:relative}
+.main-inner{max-width:640px;margin:0 auto;padding:18px 20px 120px}
+
+/* unit banner */
+.unit-banner{position:sticky;top:0;z-index:20;border-radius:var(--r-md);padding:16px 20px;
+  display:flex;align-items:center;justify-content:space-between;gap:14px;
+  background:linear-gradient(180deg,var(--primary),var(--primary-d));
+  box-shadow:0 5px 0 rgba(0,0,0,.22), 0 10px 24px rgba(207,90,44,.25);margin-bottom:8px}
+.unit-banner .eyebrow{font-family:'Fredoka';font-weight:600;font-size:12.5px;letter-spacing:1.2px;
+  text-transform:uppercase;color:rgba(255,255,255,.78);display:flex;align-items:center;gap:9px}
+.unit-banner h2{font-family:'Fredoka';font-weight:600;font-size:22px;color:#fff;margin-top:3px}
+.unit-banner .back{width:24px;height:24px;opacity:.85;flex:none}
+.guia-btn{display:flex;align-items:center;gap:9px;background:rgba(0,0,0,.18);border:2px solid rgba(255,255,255,.22);
+  border-bottom-width:4px;border-radius:14px;padding:9px 16px;color:#fff;font-family:'Fredoka';font-weight:600;
+  font-size:13px;letter-spacing:.8px;text-transform:uppercase;transition:.12s}
+.guia-btn:active{transform:translateY(2px);border-bottom-width:2px}
+
+/* path */
+.path{position:relative;padding:34px 0 10px;display:flex;flex-direction:column;align-items:center}
+.node-wrap{position:relative;margin-bottom:18px;display:flex;flex-direction:column;align-items:center}
+.node{position:relative;width:74px;height:66px;border-radius:50%;display:grid;place-items:center;
+  transition:transform .12s var(--ease);color:#fff}
+.node .face{position:absolute;inset:0;border-radius:50%;display:grid;place-items:center}
+.node svg{width:32px;height:32px;position:relative;z-index:2}
+.node.done .face{background:var(--primary);box-shadow:0 7px 0 var(--primary-d)}
+.node.review .face{background:var(--amber);box-shadow:0 7px 0 var(--amber-d)}
+.node.review svg{color:#5a3d00}
+.node.active .face{background:var(--amber);box-shadow:0 7px 0 var(--amber-d)}
+.node.active svg{color:#5a3d00}
+.node.locked .face{background:#283039;box-shadow:0 6px 0 #1b222a}
+.node.locked svg{color:#4a5662}
+.node:not(.locked){cursor:pointer}
+.node:not(.locked):hover{transform:translateY(-2px)}
+.node:not(.locked):active{transform:translateY(4px)}
+.node:not(.locked):active .face{box-shadow:0 2px 0 var(--primary-d)}
+.node.review:active .face,.node.active:active .face{box-shadow:0 2px 0 var(--amber-d)}
+
+/* active ring + start bubble */
+.node.active::before{content:"";position:absolute;inset:-7px;border-radius:50%;
+  border:4px solid var(--amber);opacity:.32;animation:ring 2s ease-in-out infinite}
+@keyframes ring{0%,100%{transform:scale(1);opacity:.32}50%{transform:scale(1.12);opacity:.08}}
+.start-bubble{position:absolute;top:-46px;left:50%;transform:translateX(-50%);
+  background:#fff;color:var(--primary);font-family:'Fredoka';font-weight:700;font-size:13px;
+  letter-spacing:1px;padding:7px 15px;border-radius:13px;white-space:nowrap;
+  box-shadow:0 4px 0 rgba(0,0,0,.18);animation:bob 1.4s ease-in-out infinite}
+.start-bubble::after{content:"";position:absolute;bottom:-7px;left:50%;transform:translateX(-50%);
+  border:8px solid transparent;border-top-color:#fff;border-bottom:0}
+@keyframes bob{0%,100%{transform:translateX(-50%) translateY(0)}50%{transform:translateX(-50%) translateY(-5px)}}
+
+.mascot-rest{position:absolute;right:-6px;top:50%;transform:translateY(-50%);pointer-events:none}
+
+/* section header chip */
+.path-divider{display:flex;align-items:center;gap:14px;width:100%;max-width:380px;margin:6px 0 24px;color:var(--muted)}
+.path-divider::before,.path-divider::after{content:"";flex:1;height:2px;background:var(--border)}
+.path-divider span{font-family:'Fredoka';font-weight:600;font-size:12px;letter-spacing:1.5px;text-transform:uppercase;white-space:nowrap}
+
+/* ================= RIGHT RAIL ================= */
+.rail{grid-area:rail;border-left:1px solid var(--border);background:var(--bg)}
+.rail-inner{padding:20px 22px 60px;display:flex;flex-direction:column;gap:18px}
+.stats{display:flex;align-items:center;justify-content:space-between;gap:6px;padding:4px 4px 14px}
+.stat{display:flex;align-items:center;gap:7px;font-family:'Fredoka';font-weight:700;font-size:16px}
+.stat svg,.stat .flag{width:26px;height:20px;flex:none}
+.stat .flag{border-radius:4px;font-size:19px;line-height:1}
+.stat.streak{color:#ff9a3d}.stat.gems{color:var(--gem)}.stat.hearts{color:var(--heart)}.stat.lang{color:var(--text)}
+
+.card{background:var(--panel);border:2px solid var(--border);border-radius:var(--r-lg);padding:20px}
+.card .tag{display:inline-flex;align-items:center;gap:6px;font-family:'Fredoka';font-weight:700;font-size:13px;
+  letter-spacing:1px;padding:3px 11px;border-radius:8px;text-transform:uppercase}
+.tag.super{background:linear-gradient(90deg,var(--teal),#7c5cff);color:#06202a}
+.tag.liga{color:var(--muted-2);letter-spacing:1.4px}
+.card h3{font-family:'Fredoka';font-weight:600;font-size:19px;margin:14px 0 8px}
+.card p{font-weight:600;font-size:14.5px;color:var(--muted);line-height:1.5}
+.card .row{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.pill-btn{width:100%;margin-top:16px;background:linear-gradient(180deg,#7b6bff,#5a49e8);color:#fff;
+  border-radius:14px;border-bottom:4px solid #4334c0;padding:13px;font-family:'Fredoka';font-weight:600;
+  font-size:14px;letter-spacing:.8px;text-transform:uppercase;transition:.12s}
+.pill-btn:active{transform:translateY(2px);border-bottom-width:2px}
+.pill-btn.ghost{background:transparent;color:var(--primary);border:2px solid var(--border-strong);border-bottom-width:4px}
+.daily{display:flex;align-items:center;gap:13px;margin-top:14px}
+.daily .ic{width:42px;height:42px;border-radius:11px;background:var(--panel-3);display:grid;place-items:center;flex:none}
+.daily .bar{height:13px;border-radius:8px;background:var(--panel-3);overflow:hidden;margin-top:7px}
+.daily .bar i{display:block;height:100%;background:linear-gradient(90deg,var(--amber),var(--primary));border-radius:8px}
+
+/* ================= MOBILE CHROME ================= */
+.mobile-top,.mobile-nav{display:none}
+.mobile-top{position:fixed;top:0;left:0;right:0;z-index:40;background:rgba(14,17,22,.92);
+  backdrop-filter:blur(8px);border-bottom:1px solid var(--border);padding:10px 16px;
+  align-items:center;justify-content:space-between}
+.mobile-nav{position:fixed;bottom:0;left:0;right:0;z-index:40;background:var(--bg);
+  border-top:1px solid var(--border);padding:7px 6px;justify-content:space-around;align-items:center}
+.mnav-btn{display:grid;place-items:center;padding:9px 14px;border-radius:14px;border:2px solid transparent;color:var(--muted)}
+.mnav-btn svg{width:27px;height:27px}
+.mnav-btn.active{background:var(--primary-soft);border-color:rgba(255,122,69,.5);color:var(--primary)}
+
+/* ================= LESSON ================= */
+.lesson{position:fixed;inset:0;z-index:100;background:var(--bg);display:flex;flex-direction:column;
+  animation:slideUp .32s var(--ease)}
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.lesson-top{display:flex;align-items:center;gap:18px;padding:20px clamp(16px,5vw,40px) 8px;max-width:1000px;margin:0 auto;width:100%}
+.close-x{font-size:30px;color:var(--muted-2);line-height:1;flex:none;transition:.15s}
+.close-x:hover{color:var(--text)}
+.progress{flex:1;height:16px;border-radius:10px;background:var(--panel-2);overflow:hidden;position:relative}
+.progress i{position:absolute;inset:0;width:0;border-radius:10px;
+  background:linear-gradient(180deg,#ffd089,var(--amber));transition:width .4s var(--ease)}
+.progress i::after{content:"";position:absolute;top:3px;left:8px;right:8px;height:4px;border-radius:4px;background:rgba(255,255,255,.4)}
+.heart-count{display:flex;align-items:center;gap:7px;color:var(--heart);font-family:'Fredoka';font-weight:700;font-size:19px}
+.heart-count svg{width:28px;height:28px}
+.heart-count.lose{animation:shake .4s}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+
+.lesson-body{flex:1;overflow-y:auto;display:flex;flex-direction:column;align-items:center;
+  padding:14px clamp(16px,5vw,40px);width:100%}
+.lesson-wrap{width:100%;max-width:640px;margin:auto 0}
+.q-title{font-family:'Fredoka';font-weight:600;font-size:clamp(22px,4vw,30px);margin-bottom:26px;animation:fadeIn .4s}
+@keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+
+/* speak/prompt row */
+.prompt-row{display:flex;align-items:flex-end;gap:16px;margin-bottom:30px;animation:fadeIn .45s}
+.speech{position:relative;background:var(--panel);border:2px solid var(--border);border-radius:16px;
+  padding:16px 20px;display:flex;align-items:center;gap:14px;font-family:'Fredoka';font-weight:500;font-size:21px}
+.speech::before{content:"";position:absolute;left:-11px;bottom:18px;width:20px;height:20px;
+  background:var(--panel);border-left:2px solid var(--border);border-bottom:2px solid var(--border);transform:rotate(45deg)}
+.speaker{width:30px;height:30px;color:var(--gem);flex:none}
+.audio-line{flex:1;border-bottom:3px dotted var(--border-strong);margin-bottom:5px;min-width:60px}
+
+/* choice options */
+.choices{display:grid;gap:12px}
+.choices.grid2{grid-template-columns:1fr 1fr}
+.choice{display:flex;align-items:center;gap:15px;text-align:left;padding:16px 18px;border-radius:15px;
+  background:var(--panel);border:2px solid var(--border);border-bottom-width:4px;
+  font-family:'Fredoka';font-weight:500;font-size:18px;transition:.12s}
+.choice:hover:not(.disabled){background:var(--panel-2);border-color:var(--border-strong)}
+.choice .kbd{width:30px;height:30px;border-radius:9px;border:2px solid var(--border-strong);
+  display:grid;place-items:center;font-size:14px;color:var(--muted);flex:none}
+.choice.sel{background:var(--primary-soft);border-color:var(--primary);color:#ffcdb3}
+.choice.sel .kbd{border-color:var(--primary);color:var(--primary)}
+.choice.correct{background:var(--green-soft);border-color:var(--green);color:#bff5a0}
+.choice.correct .kbd{border-color:var(--green);color:var(--green)}
+.choice.wrong{background:var(--red-soft);border-color:var(--red);color:#ffc2c2}
+.choice.wrong .kbd{border-color:var(--red);color:var(--red)}
+.choice.disabled{cursor:default}
+.choice:active:not(.disabled){transform:translateY(2px);border-bottom-width:2px}
+
+/* build (word bank) */
+.build-answer{min-height:60px;border-bottom:2px solid var(--border);padding:10px 0 14px;margin-bottom:6px;
+  display:flex;flex-wrap:wrap;gap:9px;align-content:flex-start}
+.build-line{height:2px;flex:1;min-width:100%;background:var(--border);order:99}
+.bank{display:flex;flex-wrap:wrap;gap:10px;margin-top:24px;justify-content:center}
+.word{padding:11px 16px;border-radius:13px;background:var(--panel);border:2px solid var(--border);
+  border-bottom-width:4px;font-family:'Fredoka';font-weight:500;font-size:18px;transition:.1s}
+.word:active{transform:translateY(2px);border-bottom-width:2px}
+.word.used{background:var(--panel);border-color:var(--border);color:transparent;pointer-events:none;opacity:.35}
+.word.placed{background:var(--panel-2)}
+
+/* match pairs */
+.match{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.match-col{display:flex;flex-direction:column;gap:12px}
+.mtile{padding:16px;border-radius:14px;background:var(--panel);border:2px solid var(--border);border-bottom-width:4px;
+  font-family:'Fredoka';font-weight:500;font-size:18px;text-align:center;transition:.12s}
+.mtile:active{transform:translateY(2px)}
+.mtile.sel{background:var(--primary-soft);border-color:var(--primary);color:#ffcdb3}
+.mtile.done{opacity:0;pointer-events:none;transition:opacity .3s}
+.mtile.miss{animation:shake .4s;border-color:var(--red)}
+
+/* footer */
+.lesson-foot{border-top:2px solid var(--border);padding:18px clamp(16px,5vw,40px);transition:.2s}
+.lesson-foot.correct{background:var(--green-soft);border-color:transparent}
+.lesson-foot.wrong{background:var(--red-soft);border-color:transparent}
+.foot-inner{max-width:1000px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:16px}
+.feedback{display:flex;align-items:center;gap:14px;font-family:'Fredoka';font-weight:600;font-size:20px}
+.feedback .fic{width:46px;height:46px;border-radius:50%;display:grid;place-items:center;flex:none}
+.feedback.ok{color:var(--green)}.feedback.ok .fic{background:var(--green);color:#fff}
+.feedback.no{color:var(--red)}.feedback.no .fic{background:var(--red);color:#fff}
+.feedback small{display:block;font-size:14px;font-weight:600;opacity:.85}
+.btn{padding:15px 30px;border-radius:16px;font-family:'Fredoka';font-weight:600;font-size:16px;
+  letter-spacing:.8px;text-transform:uppercase;transition:.12s;border-bottom:4px solid;min-width:150px}
+.btn:active{transform:translateY(2px);border-bottom-width:2px}
+.btn-primary{background:var(--primary);border-color:var(--primary-d);color:#fff}
+.btn-green{background:var(--green);border-color:var(--green-d);color:#fff}
+.btn-red{background:var(--red);border-color:var(--red-d);color:#fff}
+.btn-skip{color:var(--muted);border:2px solid var(--border-strong);border-bottom-width:4px;background:transparent}
+.btn-disabled{background:var(--panel-2);border-color:var(--border);color:var(--muted-2);pointer-events:none}
+
+/* completion */
+.complete{position:fixed;inset:0;z-index:110;background:var(--bg);display:flex;flex-direction:column;
+  align-items:center;justify-content:center;text-align:center;padding:30px;animation:fadeIn .4s}
+.complete h2{font-family:'Fredoka';font-weight:700;font-size:clamp(30px,6vw,46px);
+  background:linear-gradient(180deg,var(--amber),var(--primary));-webkit-background-clip:text;background-clip:text;color:transparent;margin:24px 0 6px}
+.complete .sub{color:var(--muted);font-size:17px;margin-bottom:34px}
+.reward-row{display:flex;gap:16px;margin-bottom:40px;flex-wrap:wrap;justify-content:center}
+.reward{width:160px;border-radius:16px;border:3px solid;padding:3px;background:var(--panel)}
+.reward .top{font-family:'Fredoka';font-weight:600;font-size:12px;letter-spacing:1px;text-transform:uppercase;
+  color:#fff;padding:6px;border-radius:12px 12px 0 0}
+.reward .val{display:flex;align-items:center;justify-content:center;gap:8px;background:var(--bg);
+  margin:3px;border-radius:11px;padding:12px;font-family:'Fredoka';font-weight:700;font-size:24px}
+.reward.xp{border-color:var(--amber)}.reward.xp .top{background:var(--amber);color:#5a3d00}.reward.xp .val{color:var(--amber)}
+.reward.acc{border-color:var(--teal)}.reward.acc .top{background:var(--teal);color:#06202a}.reward.acc .val{color:var(--teal)}
+
+/* no hearts modal */
+.modal-bg{position:fixed;inset:0;z-index:120;background:rgba(5,7,10,.75);backdrop-filter:blur(4px);
+  display:grid;place-items:center;padding:24px;animation:fadeIn .25s}
+.modal{background:var(--panel);border:2px solid var(--border);border-radius:24px;padding:34px 30px;
+  max-width:420px;width:100%;text-align:center;animation:pop .35s var(--ease)}
+@keyframes pop{from{transform:scale(.85);opacity:0}to{transform:scale(1);opacity:1}}
+.modal h3{font-family:'Fredoka';font-weight:600;font-size:26px;margin:16px 0 8px}
+.modal p{color:var(--muted);font-size:15.5px;line-height:1.5;margin-bottom:24px}
+.modal .btn{width:100%;margin-bottom:12px}
+
+.confetti{position:fixed;width:11px;height:11px;top:-20px;z-index:115;border-radius:2px;animation:fall linear forwards}
+@keyframes fall{to{transform:translateY(105vh) rotate(540deg);opacity:.9}}
+
+/* ================= RESPONSIVE ================= */
+@media (max-width:1180px){
+  .app{grid-template-columns:240px minmax(0,1fr);grid-template-areas:"side main"}
+  .rail{display:none}
+}
+@media (max-width:840px){
+  .app{grid-template-columns:88px minmax(0,1fr);grid-template-areas:"side main"}
+  .brand h1,.nav-item span{display:none}
+  .brand{justify-content:center;padding:6px 0 22px}
+  .nav-item{justify-content:center;padding:13px}
+}
+@media (max-width:620px){
+  .app{grid-template-columns:1fr;grid-template-areas:"main"}
+  .side{display:none}
+  .mobile-top,.mobile-nav{display:flex}
+  .main-inner{padding-top:64px;padding-bottom:90px}
+  .unit-banner{top:56px}
+  .stat{font-size:15px}
+  .speech{font-size:18px}
+  .choices.grid2{grid-template-columns:1fr}
+  .lesson-foot .feedback{font-size:17px}
+  .btn{min-width:0;padding:14px 22px;flex:1}
+  .foot-inner{flex-direction:column-reverse}
+  .feedback{align-self:flex-start}
+  .btn{width:100%}
+}
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<script>
+/* ===== Lumo — datos, iconos (SVG en texto) y contenido del curso ===== */
+
+const NAV = [
+  { id: "aprender", label: "Aprender", icon: "home" },
+  { id: "ligas", label: "Ligas", icon: "league" },
+  { id: "perfil", label: "Perfil", icon: "profile" },
+];
+
+const PATH_OFFSET = [0, -52, -80, -52, 0, 56, 88, 56, 0, -56];
+
+const UNIT = {
+  stage: "ETAPA 1, SECCIÓN 1",
+  title: "Saluda y despídete",
+  nodes: [
+    { id: "n1", kind: "lesson", title: "Saludos básicos" },
+    { id: "n2", kind: "lesson", title: "Cómo estás" },
+    { id: "n3", kind: "review", title: "Repaso rápido" },
+    { id: "n4", kind: "lesson", title: "Presentarte" },
+    { id: "n5", kind: "chest", title: "Cofre sorpresa" },
+    { id: "n6", kind: "lesson", title: "Despedidas" },
+    { id: "n7", kind: "review", title: "Repaso de la sección" },
+    { id: "n8", kind: "crown", title: "¡Lección legendaria!" },
+  ],
+};
+
+/* ---------- iconos: funciones que devuelven texto SVG ---------- */
+const stroke = 'fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"';
+const ICON = {
+  home: (s = 26) => `<svg viewBox="0 0 24 24" width="${s}" height="${s}" ${stroke} stroke-width="2.2"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V20a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V9.5"/><path d="M9.5 21v-6h5v6"/></svg>`,
+  league: (s = 26) => `<svg viewBox="0 0 24 24" width="${s}" height="${s}" ${stroke} stroke-width="2.2"><path d="M6 4h12v4a6 6 0 0 1-12 0z"/><path d="M6 6H4v1a3 3 0 0 0 3 3"/><path d="M18 6h2v1a3 3 0 0 1-3 3"/><path d="M9 20h6"/><path d="M12 14v6"/></svg>`,
+  profile: (s = 26) => `<svg viewBox="0 0 24 24" width="${s}" height="${s}" ${stroke} stroke-width="2.2"><circle cx="12" cy="8" r="4"/><path d="M5 20c0-3.6 3.1-6 7-6s7 2.4 7 6"/></svg>`,
+  check: (s = 32) => `<svg viewBox="0 0 24 24" width="${s}" height="${s}" ${stroke} stroke-width="3.2"><path d="m5 13 4 4L19 7"/></svg>`,
+  star: (s = 32) => `<svg viewBox="0 0 24 24" width="${s}" height="${s}" fill="currentColor"><path d="M12 3.5l2.6 5.3 5.9.85-4.25 4.15 1 5.85L12 16.9l-5.25 2.75 1-5.85L3.5 9.65l5.9-.85z"/></svg>`,
+  book: (s = 32) => `<svg viewBox="0 0 24 24" width="${s}" height="${s}" ${stroke} stroke-width="2.2"><path d="M4 5a2 2 0 0 1 2-2h5v17H6a2 2 0 0 0-2 2z"/><path d="M20 5a2 2 0 0 0-2-2h-5v17h5a2 2 0 0 1 2 2z"/></svg>`,
+  crown: (s = 32) => `<svg viewBox="0 0 24 24" width="${s}" height="${s}" fill="currentColor"><path d="M3 8l3.5 3L12 5l5.5 6L21 8l-1.5 11h-15z"/></svg>`,
+  chest: (s = 32) => `<svg viewBox="0 0 24 24" width="${s}" height="${s}" fill="currentColor"><path d="M4 10h16v9H4z" opacity=".55"/><path d="M4 10V8a3 3 0 0 1 3-3h10a3 3 0 0 1 3 3v2z"/><rect x="10.5" y="9" width="3" height="5" rx="1" fill="#5a3d00"/></svg>`,
+  flame: (s = 24) => `<svg viewBox="0 0 24 24" width="${s}" height="${s}" fill="currentColor"><path d="M12 2c1 3-2 4-2 7 0 1.5 1 2.5 2 2.5S16 10 14 7c3 1.5 5 4.2 5 7.5a7 7 0 0 1-14 0c0-3.5 3-5.5 4-8 .8 1.5 2 1.6 3 3.5z"/></svg>`,
+  gem: (s = 24) => `<svg viewBox="0 0 24 24" width="${s}" height="${s}" fill="currentColor"><path d="M6 3h12l3 5-9 13L3 8z" opacity=".9"/><path d="m3 8 9 3 9-3-3 4-6 9-6-9z" fill="rgba(255,255,255,.25)"/></svg>`,
+  heart: (s = 24) => `<svg viewBox="0 0 24 24" width="${s}" height="${s}" fill="currentColor"><path d="M12 21S3.5 14.8 3.5 8.9A4.9 4.9 0 0 1 12 5.6 4.9 4.9 0 0 1 20.5 8.9C20.5 14.8 12 21 12 21z"/></svg>`,
+  speaker: (s = 28) => `<svg viewBox="0 0 24 24" width="${s}" height="${s}" fill="currentColor"><path d="M4 9v6h4l5 4V5L8 9z"/><path d="M16 8.5a4 4 0 0 1 0 7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M18.5 6a7 7 0 0 1 0 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>`,
+  guia: (s = 18) => `<svg viewBox="0 0 24 24" width="${s}" height="${s}" ${stroke} stroke-width="2.2"><path d="M4 5h13"/><path d="M4 12h13"/><path d="M4 19h13"/><circle cx="20" cy="5" r="1"/><circle cx="20" cy="12" r="1"/><circle cx="20" cy="19" r="1"/></svg>`,
+  arrowL: (s = 22) => `<svg viewBox="0 0 24 24" width="${s}" height="${s}" ${stroke} stroke-width="2.6"><path d="M15 5l-7 7 7 7"/></svg>`,
+  x: (s = 26) => `<svg viewBox="0 0 24 24" width="${s}" height="${s}" ${stroke} stroke-width="2.6"><path d="M6 6l12 12M18 6 6 18"/></svg>`,
+};
+
+/* ---------- personajes ---------- */
+function MASCOT(s = 130) {
+  return `<svg viewBox="0 0 130 130" width="${s}" height="${s}" aria-label="Lumo">
+    <ellipse cx="50" cy="120" rx="11" ry="6" fill="#d97a18"/><ellipse cx="80" cy="120" rx="11" ry="6" fill="#d97a18"/>
+    <path d="M34 38 L40 12 L54 32 Z" fill="#ff8a2a"/><path d="M96 38 L90 12 L76 32 Z" fill="#ff8a2a"/>
+    <ellipse cx="65" cy="72" rx="42" ry="46" fill="#ff9a3d"/><ellipse cx="65" cy="82" rx="29" ry="33" fill="#ffd99a"/>
+    <ellipse cx="22" cy="74" rx="10" ry="24" fill="#ff8a2a"/><ellipse cx="108" cy="74" rx="10" ry="24" fill="#ff8a2a"/>
+    <circle cx="50" cy="56" r="20" fill="#fff"/><circle cx="80" cy="56" r="20" fill="#fff"/>
+    <circle cx="53" cy="58" r="9" fill="#33271a"/><circle cx="77" cy="58" r="9" fill="#33271a"/>
+    <circle cx="56" cy="54" r="3.4" fill="#fff"/><circle cx="80" cy="54" r="3.4" fill="#fff"/>
+    <path d="M57 68 L73 68 L65 80 Z" fill="#ffb838"/></svg>`;
+}
+function TUTOR(s = 96) {
+  return `<svg viewBox="0 0 120 120" width="${s}" height="${s}" aria-label="tutor">
+    <ellipse cx="60" cy="110" rx="34" ry="8" fill="rgba(0,0,0,.25)"/>
+    <ellipse cx="60" cy="78" rx="34" ry="30" fill="#2aa9f0"/><ellipse cx="60" cy="74" rx="26" ry="22" fill="#67c5ff" opacity=".5"/>
+    <circle cx="60" cy="44" r="26" fill="#ffd9b0"/>
+    <path d="M38 36c2-14 42-14 44 0 2 6-6 4-22 4s-24 2-22-4z" fill="#ff8a2a"/>
+    <circle cx="51" cy="44" r="4.2" fill="#33271a"/><circle cx="69" cy="44" r="4.2" fill="#33271a"/>
+    <circle cx="52.4" cy="42.6" r="1.4" fill="#fff"/><circle cx="70.4" cy="42.6" r="1.4" fill="#fff"/>
+    <path d="M55 53q5 4 10 0" fill="none" stroke="#cf855a" stroke-width="2.4" stroke-linecap="round"/></svg>`;
+}
+function LOGO(s = 34) {
+  return `<svg viewBox="0 0 40 40" width="${s}" height="${s}" aria-label="logo">
+    <rect x="2" y="2" width="36" height="36" rx="11" fill="#ff9a3d"/>
+    <circle cx="14" cy="17" r="6.5" fill="#fff"/><circle cx="26" cy="17" r="6.5" fill="#fff"/>
+    <circle cx="15" cy="18" r="3" fill="#33271a"/><circle cx="25" cy="18" r="3" fill="#33271a"/>
+    <path d="M16 25 L24 25 L20 31 Z" fill="#ffb838"/></svg>`;
+}
+
+/* ---------- banco de ejercicios (inglés para hispanohablantes) ---------- */
+const EXERCISES = {
+  n1: [
+    { type: "choice", q: "¿Cómo se dice «Hola»?", play: "Hola", options: ["Goodbye", "Hello", "Please", "Sorry"], answer: 1 },
+    { type: "choice", q: "Selecciona el significado de «Good morning»", options: ["Buenas noches", "Buenos días", "Hasta luego", "Buenas tardes"], answer: 1 },
+    { type: "match", q: "Empareja los pares", pairs: [["Hello", "Hola"], ["Thanks", "Gracias"], ["Bye", "Adiós"], ["Please", "Por favor"]] },
+    { type: "build", q: "Traduce esta oración", prompt: "Hola, buenas tardes", answer: ["Hello", "good", "afternoon"], bank: ["Hello", "good", "afternoon", "morning", "night", "bye"] },
+    { type: "choice", q: "¿Qué significa «Welcome»?", options: ["Bienvenido", "Despedida", "Buenas noches", "Por favor"], answer: 0 },
+  ],
+  n2: [
+    { type: "choice", q: "¿Qué significa «How are you?»", play: "How are you?", options: ["¿De dónde eres?", "¿Cómo estás?", "¿Cómo te llamas?", "¿Cuántos años tienes?"], answer: 1 },
+    { type: "build", q: "Traduce esta oración", prompt: "Estoy muy bien, gracias", answer: ["I", "am", "very", "well", "thanks"], bank: ["I", "am", "very", "well", "thanks", "you", "fine", "good"] },
+    { type: "choice", q: "Selecciona el significado de «I'm fine»", options: ["Estoy cansado", "Estoy bien", "Estoy ocupado", "Estoy aquí"], answer: 1 },
+    { type: "match", q: "Empareja los pares", pairs: [["Good", "Bien"], ["Bad", "Mal"], ["Tired", "Cansado"], ["Happy", "Feliz"]] },
+    { type: "choice", q: "¿Cómo respondes a «How are you?»", options: ["My name is Ana", "I'm fine, thanks", "Goodbye", "You're welcome"], answer: 1 },
+  ],
+  n3: [
+    { type: "choice", q: "¿Qué significa «Goodbye»?", options: ["Hola", "Gracias", "Adiós", "Por favor"], answer: 2 },
+    { type: "match", q: "Empareja los pares", pairs: [["Hello", "Hola"], ["How are you?", "¿Cómo estás?"], ["I'm fine", "Estoy bien"], ["Thanks", "Gracias"]] },
+    { type: "build", q: "Traduce esta oración", prompt: "Hola, ¿cómo estás?", answer: ["Hello", "how", "are", "you"], bank: ["Hello", "how", "are", "you", "is", "fine", "good"] },
+    { type: "choice", q: "Selecciona el significado de «Please»", options: ["Gracias", "Por favor", "Perdón", "De nada"], answer: 1 },
+  ],
+  n4: [
+    { type: "build", q: "Traduce esta oración", prompt: "Yo me llamo Ana", answer: ["My", "name", "is", "Ana"], bank: ["My", "name", "is", "Ana", "are", "you", "I'm"] },
+    { type: "choice", q: "¿Qué significa «What's your name?»", play: "What's your name?", options: ["¿Cuántos años tienes?", "¿Cómo te llamas?", "¿De dónde eres?", "¿Cómo estás?"], answer: 1 },
+    { type: "match", q: "Empareja los pares", pairs: [["Name", "Nombre"], ["I am", "Yo soy"], ["From", "De"], ["Nice", "Encantado"]] },
+    { type: "choice", q: "Selecciona el significado de «Nice to meet you»", options: ["Hasta pronto", "Encantado de conocerte", "Buenos días", "Muchas gracias"], answer: 1 },
+    { type: "build", q: "Traduce esta oración", prompt: "Soy de México", answer: ["I", "am", "from", "Mexico"], bank: ["I", "am", "from", "Mexico", "to", "is", "name"] },
+  ],
+  n6: [
+    { type: "choice", q: "¿Cómo se dice «Adiós»?", play: "Adiós", options: ["Hello", "Goodbye", "Please", "Welcome"], answer: 1 },
+    { type: "match", q: "Empareja los pares", pairs: [["See you", "Nos vemos"], ["Later", "Luego"], ["Take care", "Cuídate"], ["Good night", "Buenas noches"]] },
+    { type: "build", q: "Traduce esta oración", prompt: "Nos vemos mañana", answer: ["See", "you", "tomorrow"], bank: ["See", "you", "tomorrow", "later", "night", "soon"] },
+    { type: "choice", q: "Selecciona el significado de «Take care»", options: ["Cuídate", "Apúrate", "Buenos días", "De nada"], answer: 0 },
+    { type: "choice", q: "¿Qué significa «See you later»?", options: ["Te veo ahora", "Nos vemos luego", "Buenas noches", "Encantado"], answer: 1 },
+  ],
+  n7: [
+    { type: "match", q: "Empareja los pares", pairs: [["Hello", "Hola"], ["Goodbye", "Adiós"], ["Thanks", "Gracias"], ["Sorry", "Perdón"]] },
+    { type: "build", q: "Traduce esta oración", prompt: "Encantado, soy Ana", answer: ["Nice", "to", "meet", "you", "I'm", "Ana"], bank: ["Nice", "to", "meet", "you", "I'm", "Ana", "from", "name"] },
+    { type: "choice", q: "¿Qué significa «How are you?»", options: ["¿Cómo estás?", "¿Quién eres?", "¿Dónde estás?", "¿Qué hora es?"], answer: 0 },
+    { type: "choice", q: "Selecciona el significado de «Take care»", options: ["Hasta luego", "Cuídate", "Por favor", "Bienvenido"], answer: 1 },
+  ],
+  n8: [
+    { type: "choice", q: "¿Qué significa «See you soon»?", options: ["Hasta pronto", "Buenas noches", "Encantado", "De nada"], answer: 0 },
+    { type: "build", q: "Traduce esta oración", prompt: "Buenas noches, cuídate", answer: ["Good", "night", "take", "care"], bank: ["Good", "night", "take", "care", "morning", "you", "see"] },
+    { type: "match", q: "Empareja los pares", pairs: [["Welcome", "Bienvenido"], ["Please", "Por favor"], ["Sorry", "Perdón"], ["Thanks", "Gracias"]] },
+    { type: "choice", q: "¿Cómo se dice «Encantado de conocerte»?", options: ["See you later", "Nice to meet you", "How are you?", "Take care"], answer: 1 },
+    { type: "choice", q: "¿Qué significa «Have a nice day»?", options: ["Buen provecho", "Que tengas un buen día", "Hasta mañana", "Buenas tardes"], answer: 1 },
+  ],
+};
+
+function getExercises(node) {
+  return EXERCISES[node.id] || EXERCISES.n1;
+}
+
+</script>
+<script>
+/* ===== Lumo — app en JavaScript puro (sin frameworks) ===== */
+(function () {
+  "use strict";
+
+  const root = document.getElementById("root");
+  const STORE_KEY = "lumo_demo_v2";
+  const DEFAULT = { completed: 0, hearts: 5, gems: 183, dailyPct: 40, xp: 0 };
+
+  let store = load();
+  const view = { screen: "map", nav: "aprender", activeNode: null, earnedXp: 0 };
+  let lesson = null;
+
+  function load() {
+    try { return Object.assign({}, DEFAULT, JSON.parse(localStorage.getItem(STORE_KEY) || "{}")); }
+    catch (e) { return Object.assign({}, DEFAULT); }
+  }
+  function save() { try { localStorage.setItem(STORE_KEY, JSON.stringify(store)); } catch (e) { } }
+
+  function shuffle(a) {
+    const r = a.slice();
+    for (let i = r.length - 1; i > 0; i--) { const j = (Math.random() * (i + 1)) | 0;[r[i], r[j]] = [r[j], r[i]]; }
+    return r;
+  }
+  const cur = () => lesson.exercises[lesson.idx];
+  const esc = (s) => String(s).replace(/"/g, "&quot;");
+
+  /* =================== PANTALLA: MAPA =================== */
+  function statHTML() {
+    return `<div class="stats" style="justify-content:flex-end;gap:22px">
+      <div class="stat gems">${ICON.gem()}${store.gems}</div>
+      <div class="stat hearts">${ICON.heart()}${store.hearts}</div>
+    </div>`;
+  }
+
+  function nodeHTML(node, i) {
+    const active = store.completed;
+    const status = i < active ? "done" : i === active ? "active" : "locked";
+    let cls = "node " + (status === "done" ? "done" : status === "active" ? "active" : "locked");
+    if (status !== "locked" && node.kind !== "lesson") cls = "node " + (status === "done" ? "done" : "review");
+    const iconMap = { lesson: ICON.star, review: ICON.book, chest: ICON.chest, crown: ICON.crown };
+    const icon = status === "done" ? ICON.check() : iconMap[node.kind]();
+    const offset = PATH_OFFSET[i % PATH_OFFSET.length];
+    const showStart = status === "active";
+    const mascotIdx = Math.min(active + 1, UNIT.nodes.length - 1);
+    const isMascot = i === mascotIdx && active < UNIT.nodes.length;
+    return `<div class="node-wrap" style="transform:translateX(${offset}px)">
+      ${showStart ? '<div class="start-bubble fred">EMPIEZA</div>' : ""}
+      <button class="${cls}" data-act="start" data-i="${i}" ${status === "locked" ? "disabled" : ""} title="${esc(node.title)}">
+        <span class="face">${icon}</span>
+      </button>
+      ${isMascot ? `<div class="mascot-rest" style="${offset > 0 ? "left:-96px;right:auto" : "right:-96px"}">${MASCOT(104)}</div>` : ""}
+    </div>`;
+  }
+
+  function mapHTML() {
+    const nodes = UNIT.nodes.map(nodeHTML).join("");
+    const navSide = NAV.map((n) => `<button class="nav-item ${view.nav === n.id ? "active" : ""}" data-act="nav" data-id="${n.id}">${ICON[n.icon]()}<span>${n.label}</span></button>`).join("");
+    const navMob = NAV.map((n) => `<button class="mnav-btn ${view.nav === n.id ? "active" : ""}" data-act="nav" data-id="${n.id}">${ICON[n.icon]()}</button>`).join("");
+    return `<div class="app">
+      <header class="mobile-top">
+        <div class="brand" style="padding:0">${LOGO(28)}<h1 class="fred" style="font-size:22px;display:block">Lumo</h1></div>
+        <div style="display:flex;gap:18px">
+          <div class="stat gems">${ICON.gem()}${store.gems}</div>
+          <div class="stat hearts">${ICON.heart()}${store.hearts}</div>
+        </div>
+      </header>
+
+      <aside class="side scroller">
+        <div class="brand">${LOGO()}<h1 class="fred">Lumo</h1></div>
+        ${navSide}
+      </aside>
+
+      <main class="main scroller">
+        <div class="main-inner">
+          <div class="unit-banner">
+            <div>
+              <div class="eyebrow">${ICON.arrowL()}${UNIT.stage}</div>
+              <h2>${UNIT.title}</h2>
+            </div>
+            <button class="guia-btn">${ICON.guia()} Guía</button>
+          </div>
+          <div class="path">
+            ${nodes}
+            <div class="path-divider"><span>Próxima sección</span></div>
+            <button class="node locked" style="margin-bottom:18px" disabled><span class="face">${ICON.star()}</span></button>
+          </div>
+        </div>
+        <nav class="mobile-nav">${navMob}</nav>
+      </main>
+
+      <aside class="rail scroller">
+        <div class="rail-inner">
+          ${statHTML()}
+          <div class="card">
+            <div class="row"><h3 style="margin:0">Desafíos del día</h3><span style="color:var(--primary);font-family:Fredoka;font-weight:600;font-size:13px;letter-spacing:.6px">VER TODOS</span></div>
+            <div class="daily"><div class="ic" style="color:var(--amber)">${ICON.flame(24)}</div><div style="flex:1"><div style="font-family:Fredoka;font-weight:600;font-size:15px">Gana 10 EXP</div><div class="bar"><i style="width:${store.dailyPct}%"></i></div></div></div>
+            <div class="daily"><div class="ic" style="color:var(--gem)">${ICON.gem(24)}</div><div style="flex:1"><div style="font-family:Fredoka;font-weight:600;font-size:15px">Completa 1 lección</div><div class="bar"><i style="width:${Math.min(100, store.completed * 100)}%"></i></div></div></div>
+          </div>
+        </div>
+      </aside>
+    </div>`;
+  }
+
+  /* =================== PANTALLA: LECCIÓN =================== */
+  function lessonShellHTML() {
+    return `<div class="lesson">
+      <div class="lesson-top">
+        <button class="close-x" data-act="quit">${ICON.x()}</button>
+        <div class="progress"><i id="progress-fill" style="width:0%"></i></div>
+        <div class="heart-count" id="heart-box">${ICON.heart()}<span id="heart-num">${store.hearts}</span></div>
+      </div>
+      <div class="lesson-body"><div class="lesson-wrap">
+        <h2 class="q-title" id="q-title"></h2>
+        <div id="ex-area"></div>
+      </div></div>
+      <div class="lesson-foot" id="lesson-foot"><div class="foot-inner" id="foot-inner"></div></div>
+    </div>`;
+  }
+
+  function choiceBodyHTML() {
+    const ex = cur();
+    const play = ex.play
+      ? `<div class="prompt-row">${TUTOR(92)}<div class="speech"><button class="speaker" data-act="speak" data-text="${esc(ex.play)}">${ICON.speaker()}</button><span>${ex.play}</span></div></div>`
+      : "";
+    const opts = ex.options.map((o, i) => {
+      let c = "choice";
+      if (lesson.checked) { if (i === ex.answer) c += " correct"; else if (i === lesson.sel) c += " wrong"; else c += " disabled"; }
+      else if (i === lesson.sel) c += " sel";
+      return `<button class="${c}" data-act="choice" data-i="${i}"><span class="kbd">${i + 1}</span>${o}</button>`;
+    }).join("");
+    return play + `<div class="choices ${ex.options.length === 4 ? "grid2" : ""}">${opts}</div>`;
+  }
+
+  function buildAnswerInner() {
+    const ex = cur();
+    return `<div class="build-line"></div>` + lesson.placed.map((bi, pos) =>
+      `<button class="word placed" data-act="unword" data-pos="${pos}">${ex.bank[bi]}</button>`).join("");
+  }
+  function buildBankInner() {
+    const ex = cur();
+    return ex.bank.map((w, bi) =>
+      `<button class="word ${lesson.placed.includes(bi) ? "used" : ""}" data-act="word" data-i="${bi}">${w}</button>`).join("");
+  }
+  function buildBodyHTML() {
+    const ex = cur();
+    return `<div class="prompt-row">${TUTOR(92)}<div class="speech"><span>${ex.prompt}</span></div></div>
+      <div class="build-answer" id="build-answer">${buildAnswerInner()}</div>
+      <div class="bank" id="bank">${buildBankInner()}</div>`;
+  }
+
+  function matchColHTML(side) {
+    const list = side === "L" ? lesson.cols.L : lesson.cols.R;
+    const selId = side === "L" ? lesson.mLeft : lesson.mRight;
+    return list.map((it) => {
+      let c = "mtile";
+      if (lesson.mDone.includes(it.i)) c += " done";
+      else if (selId === it.i) c += " sel";
+      if (lesson.mMiss && (side === "L" ? lesson.mMiss.l : lesson.mMiss.r) === it.i) c += " miss";
+      return `<button class="${c}" data-act="match" data-side="${side}" data-i="${it.i}">${it.t}</button>`;
+    }).join("");
+  }
+  function matchBodyHTML() {
+    return `<div class="match"><div class="match-col">${matchColHTML("L")}</div><div class="match-col">${matchColHTML("R")}</div></div>`;
+  }
+
+  function exBodyHTML() {
+    const t = cur().type;
+    return t === "choice" ? choiceBodyHTML() : t === "build" ? buildBodyHTML() : matchBodyHTML();
+  }
+
+  function footerHTML() {
+    const ex = cur();
+    const correctText = ex.type === "build" ? ex.answer.join(" ") : ex.type === "choice" ? ex.options[ex.answer] : "";
+    if (lesson.checked) {
+      const left = `<div class="feedback ${lesson.isCorrect ? "ok" : "no"}"><span class="fic">${lesson.isCorrect ? ICON.check(26) : ICON.x(24)}</span><div>${lesson.isCorrect ? "¡Correcto!" : "Respuesta correcta:"}${(!lesson.isCorrect && correctText) ? `<small>${correctText}</small>` : ""}</div></div>`;
+      const right = `<button class="btn ${lesson.isCorrect ? "btn-green" : "btn-red"}" data-act="continue">Continuar</button>`;
+      return left + right;
+    }
+    const left = `<button class="btn btn-skip" data-act="skip">${ex.type === "match" ? "Saltar" : "No sé"}</button>`;
+    const canCheck = ex.type === "choice" ? lesson.sel !== null : ex.type === "build" ? lesson.placed.length > 0 : false;
+    const right = ex.type === "match" ? "" : `<button class="btn ${canCheck ? "btn-primary" : "btn-disabled"}" data-act="check">Comprobar</button>`;
+    return left + right;
+  }
+  function renderFooter() {
+    document.getElementById("foot-inner").innerHTML = footerHTML();
+    document.getElementById("lesson-foot").className = "lesson-foot" + (lesson.checked ? (lesson.isCorrect ? " correct" : " wrong") : "");
+  }
+  function updateProgress() {
+    const pct = ((lesson.idx + (lesson.checked ? 1 : 0)) / lesson.exercises.length) * 100;
+    document.getElementById("progress-fill").style.width = pct + "%";
+  }
+  function updateHeart(pulse) {
+    const num = document.getElementById("heart-num");
+    if (num) num.textContent = Math.max(store.hearts, 0);
+    if (pulse) { const box = document.getElementById("heart-box"); if (box) { box.classList.add("lose"); setTimeout(() => box.classList.remove("lose"), 450); } }
+  }
+
+  function initInput() {
+    lesson.checked = false; lesson.isCorrect = false; lesson.sel = null; lesson.placed = [];
+    lesson.mLeft = null; lesson.mRight = null; lesson.mDone = []; lesson.mMiss = null;
+    if (cur().type === "match") {
+      lesson.cols = {
+        L: shuffle(cur().pairs.map((p, i) => ({ t: p[0], i }))),
+        R: shuffle(cur().pairs.map((p, i) => ({ t: p[1], i }))),
+      };
+    }
+  }
+  function renderQuestion() {
+    const qt = document.getElementById("q-title");
+    qt.textContent = cur().q;
+    qt.style.animation = "none"; void qt.offsetWidth; qt.style.animation = "";
+    document.getElementById("ex-area").innerHTML = exBodyHTML();
+    renderFooter(); updateProgress();
+  }
+
+  /* ---------- interacciones de lección ---------- */
+  function selectChoice(i) {
+    if (lesson.checked) return;
+    lesson.sel = i;
+    document.querySelectorAll("#ex-area .choice").forEach((b, idx) => b.classList.toggle("sel", idx === i));
+    renderFooter();
+  }
+  function addWord(bi) {
+    if (lesson.checked || lesson.placed.includes(bi)) return;
+    lesson.placed.push(bi); refreshBuild();
+  }
+  function removeWord(pos) {
+    if (lesson.checked) return;
+    lesson.placed.splice(pos, 1); refreshBuild();
+  }
+  function refreshBuild() {
+    document.getElementById("build-answer").innerHTML = buildAnswerInner();
+    document.getElementById("bank").innerHTML = buildBankInner();
+    renderFooter();
+  }
+  function renderMatch() { document.getElementById("ex-area").innerHTML = matchBodyHTML(); }
+  function tapMatch(side, i) {
+    if (lesson.checked || lesson.mDone.includes(i)) return;
+    if (side === "L") { lesson.mLeft = lesson.mLeft === i ? null : i; if (lesson.mLeft !== null && lesson.mRight !== null) return resolveMatch(); }
+    else { lesson.mRight = lesson.mRight === i ? null : i; if (lesson.mRight !== null && lesson.mLeft !== null) return resolveMatch(); }
+    renderMatch();
+  }
+  function resolveMatch() {
+    const l = lesson.mLeft, r = lesson.mRight;
+    if (l === r) {
+      lesson.mDone.push(l); lesson.mLeft = null; lesson.mRight = null; renderMatch();
+      if (lesson.mDone.length === cur().pairs.length) {
+        setTimeout(() => { lesson.isCorrect = true; lesson.checked = true; renderFooter(); updateProgress(); }, 350);
+      }
+    } else {
+      lesson.mMiss = { l, r }; renderMatch();
+      setTimeout(() => { lesson.mMiss = null; lesson.mLeft = null; lesson.mRight = null; renderMatch(); }, 500);
+    }
+  }
+
+  function evaluate() {
+    const ex = cur();
+    if (ex.type === "choice") return lesson.sel === ex.answer;
+    if (ex.type === "build") { const w = lesson.placed.map((bi) => ex.bank[bi]); return w.length === ex.answer.length && w.every((x, i) => x === ex.answer[i]); }
+    return true;
+  }
+  function check() {
+    const ex = cur();
+    const ok = evaluate();
+    lesson.isCorrect = ok; lesson.checked = true;
+    if (!ok) { store.hearts = Math.max(0, store.hearts - 1); save(); updateHeart(true); }
+    if (ex.type === "choice") {
+      document.querySelectorAll("#ex-area .choice").forEach((b, i) => {
+        b.classList.remove("sel");
+        if (i === ex.answer) b.classList.add("correct");
+        else if (i === lesson.sel) b.classList.add("wrong");
+        else b.classList.add("disabled");
+      });
+    }
+    renderFooter(); updateProgress();
+  }
+  function cont() {
+    if (!lesson.isCorrect && store.hearts <= 0) { showNoHearts(); return; }
+    if (lesson.idx + 1 >= lesson.exercises.length) { finishLesson(); return; }
+    lesson.idx++; initInput(); renderQuestion();
+  }
+  function skip() {
+    if (cur().type === "match") { quitLesson(); return; }
+    lesson.sel = null; lesson.placed = []; renderQuestion();
+  }
+
+  function startLesson(node) {
+    lesson = { exercises: getExercises(node), idx: 0 };
+    initInput();
+    view.screen = "lesson";
+    render();
+  }
+  function quitLesson() { view.screen = "map"; render(); }
+
+  /* =================== COMPLETADO + MODAL =================== */
+  function finishLesson() {
+    const xp = 10 + (view.activeNode.kind === "crown" ? 20 : view.activeNode.kind === "review" ? 5 : 0);
+    view.earnedXp = xp;
+    store.completed = Math.min(store.completed + 1, UNIT.nodes.length);
+    store.gems += 5; store.xp += xp; store.dailyPct = Math.min(100, store.dailyPct + 30);
+    save();
+    view.screen = "complete"; render();
+  }
+  function confettiHTML() {
+    const colors = ["#ff7a45", "#ffc53d", "#2dd4bf", "#5fcf2f", "#ff5d6c", "#38c6f4"];
+    let s = "";
+    for (let i = 0; i < 60; i++) {
+      s += `<span class="confetti" style="left:${(Math.random() * 100).toFixed(1)}vw;background:${colors[i % colors.length]};animation-duration:${(1.6 + Math.random() * 1.4).toFixed(2)}s;animation-delay:${(Math.random() * 0.6).toFixed(2)}s;transform:rotate(${(Math.random() * 360) | 0}deg)"></span>`;
+    }
+    return s;
+  }
+  function completeHTML() {
+    return `<div class="complete">
+      ${confettiHTML()}
+      <div style="animation:bob 1.6s ease-in-out infinite">${MASCOT(150)}</div>
+      <h2 class="fred">¡Lección completada!</h2>
+      <p class="sub">Sigue así — tu racha está más fuerte que nunca.</p>
+      <div class="reward-row">
+        <div class="reward xp"><div class="top">Total XP</div><div class="val">${ICON.flame(24)}${view.earnedXp}</div></div>
+        <div class="reward acc"><div class="top">Precisión</div><div class="val">${ICON.star(22)}100%</div></div>
+      </div>
+      <button class="btn btn-primary" style="min-width:240px" data-act="complete-continue">Continuar</button>
+    </div>`;
+  }
+
+  function noHeartsHTML() {
+    return `<div class="modal-bg" id="nh-modal"><div class="modal">
+      <div style="display:flex;justify-content:center;gap:6px;margin-bottom:4px">
+        <span style="color:#3a2730">${ICON.heart(38)}</span><span style="color:#3a2730">${ICON.heart(38)}</span><span style="color:#3a2730">${ICON.heart(38)}</span>
+      </div>
+      <h3 class="fred">¡Te quedaste sin vidas!</h3>
+      <p>Perdiste todos tus corazones. En la versión completa esperarías o usarías gemas — para la demo, recárgalas gratis.</p>
+      <button class="btn btn-green" data-act="refill">Recargar vidas (demo)</button>
+      <button class="btn btn-skip" data-act="nh-quit">Salir al mapa</button>
+    </div></div>`;
+  }
+  function showNoHearts() { if (!document.getElementById("nh-modal")) root.insertAdjacentHTML("beforeend", noHeartsHTML()); }
+  function removeModal() { const m = document.getElementById("nh-modal"); if (m) m.remove(); }
+  function refill() {
+    store.hearts = 5; save(); removeModal();
+    if (view.screen === "lesson") updateHeart(false);
+    else if (view.activeNode) startLesson(view.activeNode);
+  }
+  function nhQuit() { removeModal(); if (view.screen === "lesson") quitLesson(); }
+
+  /* =================== AUDIO =================== */
+  function speak(text) {
+    try {
+      const u = new SpeechSynthesisUtterance(text);
+      u.lang = /[a-zA-Z]/.test(text) && !/[áéíóúñ¿¡]/.test(text) ? "en-US" : "es-ES";
+      u.rate = 0.9;
+      speechSynthesis.cancel(); speechSynthesis.speak(u);
+    } catch (e) { }
+  }
+
+  /* =================== RENDER + EVENTOS =================== */
+  function render() {
+    if (view.screen === "map") root.innerHTML = mapHTML();
+    else if (view.screen === "lesson") { root.innerHTML = lessonShellHTML(); renderQuestion(); }
+    else if (view.screen === "complete") root.innerHTML = completeHTML();
+  }
+
+  function startNode(i) {
+    const node = UNIT.nodes[i];
+    if (i !== store.completed) return;
+    view.activeNode = node;
+    if (store.hearts <= 0) { showNoHearts(); return; }
+    startLesson(node);
+  }
+
+  root.addEventListener("click", function (e) {
+    const t = e.target.closest("[data-act]");
+    if (!t) return;
+    const act = t.getAttribute("data-act");
+    switch (act) {
+      case "nav": view.nav = t.getAttribute("data-id"); render(); break;
+      case "start": startNode(+t.getAttribute("data-i")); break;
+      case "choice": selectChoice(+t.getAttribute("data-i")); break;
+      case "word": addWord(+t.getAttribute("data-i")); break;
+      case "unword": removeWord(+t.getAttribute("data-pos")); break;
+      case "match": tapMatch(t.getAttribute("data-side"), +t.getAttribute("data-i")); break;
+      case "check": check(); break;
+      case "continue": cont(); break;
+      case "skip": skip(); break;
+      case "quit": quitLesson(); break;
+      case "speak": speak(t.getAttribute("data-text")); break;
+      case "complete-continue": view.screen = "map"; render(); break;
+      case "refill": refill(); break;
+      case "nh-quit": nhQuit(); break;
+    }
+  });
+
+  render();
+})();
+
+</script>
+</body>
+</html>
